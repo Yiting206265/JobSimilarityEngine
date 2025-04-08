@@ -1,15 +1,36 @@
 version: '3.8'
 
 services:
-  job-embedding-search:
-    build: .
-    container_name: job-embedding-search
-    ports:
-      - "8000:8000"
+  db:
+    image: postgres:15
     environment:
-      - DEBIAN_FRONTEND=noninteractive
+      POSTGRES_USER: jobsearch
+      POSTGRES_PASSWORD: jobsearchpass
+      POSTGRES_DB: jobsearchdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jobsearch -d jobsearchdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://jobsearch:jobsearchpass@db:5432/jobsearchdb
     volumes:
       - .:/app
-    restart: unless-stopped
-    tty: true
+      - embeddings_data:/app/data
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
 
+volumes:
+  postgres_data:
+  embeddings_data: 
