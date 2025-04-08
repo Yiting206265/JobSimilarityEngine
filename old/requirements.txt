@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pandas
+numpy
+faiss-cpu
+matplotlib
+tqdm
+sentence-transformers
+spacy
+gensim
+

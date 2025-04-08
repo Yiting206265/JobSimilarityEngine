@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  job-embedding-search:
+    build: .
+    container_name: job-embedding-search
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBIAN_FRONTEND=noninteractive
+    volumes:
+      - .:/app
+    restart: unless-stopped
+    tty: true
+
